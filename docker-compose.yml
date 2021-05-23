@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+  app:
+    build: ./app
+    volumes:
+      - ./app:/app
+    command:
+      bash -c "yes | pip install -r /app/requirements.txt &&
+      python db.py &&
+      uvicorn main:app --host 0.0.0.0 --reload"
+    ports:
+      - 8000:8000 
+    environment:
+      - HOST=db
+      - DB=postgres
+      - PORT=5432
+      - USER=postgres
+      - PASSWORD=postgres
+    depends_on:
+      - db
+  db:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
